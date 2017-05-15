@@ -87,6 +87,9 @@ public:
    */
   virtual ~UKF();
 
+  // Angle normalization
+  double AngleNorm(double angle);
+
   /**
    * ProcessMeasurement
    * @param meas_package The latest measurement data of either radar or laser
