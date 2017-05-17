@@ -61,9 +61,6 @@ class FG_eval {
 
     // The part of the cost based on the reference state.
     for (int i = 0; i < N; i++) {
-      // fg[0] += CppAD::pow(vars[cte_start + i] - ref_cte, 2);
-      // fg[0] += CppAD::pow(vars[epsi_start + i] - ref_epsi, 2);
-      // fg[0] += CppAD::pow(vars[v_start + i] - ref_v, 2);
       cte_cost += CppAD::pow(vars[cte_start + i] - ref_cte, 2) * 1.0e3;
       epsi_cost += CppAD::pow(vars[epsi_start + i] - ref_epsi, 2) * 1.0e3;
       v_cost += CppAD::pow(vars[v_start + i] - ref_v, 2);
@@ -74,21 +71,14 @@ class FG_eval {
 
     // Minimize the use of actuators.
     for (int i = 0; i < N - 1; i++) {
-      // fg[0] += CppAD::pow(vars[delta_start + i], 2);
-      // fg[0] += CppAD::pow(vars[a_start + i], 2);
-      // fg[0] += CppAD::pow(vars[x_start + i + 1]-vars[x_start + i], 2) + CppAD::pow(vars[y_start + i + 1]-vars[y_start + i], 2);
       delta_cost += CppAD::pow(vars[delta_start + i], 2)*10;
       a_cost += CppAD::pow(vars[a_start + i], 2)*10;
     }
     std::cout << "delta cost " << delta_cost << std::endl;
     std::cout << "a cost " << a_cost << std::endl;
-    // std::cout << "x cost " << x_cost << std::endl;
-    // std::cout << "y cost " << y_cost << std::endl;
 
     // Minimize the value gap between sequential actuations.
     for (int i = 0; i < N - 2; i++) {
-      // fg[0] += CppAD::pow(vars[delta_start + i + 1] - vars[delta_start + i], 2);
-      // fg[0] += CppAD::pow(vars[a_start + i + 1] - vars[a_start + i], 2);
       gap_delta_cost += 50*CppAD::pow(vars[delta_start + i + 1] - vars[delta_start + i], 2);
       gap_a_cost += 50*CppAD::pow(vars[a_start + i + 1] - vars[a_start + i], 2);
     }
@@ -201,8 +191,6 @@ vector<double> MPC::Solve(Eigen::VectorXd x0, Eigen::VectorXd coeffs) {
   vars[cte_start] = cte;
   vars[epsi_start] = epsi;
 
-
-  
   Dvector vars_lowerbound(n_vars);
   Dvector vars_upperbound(n_vars);
   // TODO: Set lower and upper limits for variables.

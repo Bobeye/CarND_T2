@@ -99,12 +99,6 @@ int main() {
           * Both are in between [-1, 1].
           *
           */
-          // create Eigen vectors from standard vector
-          // Eigen::VectorXd ptsxV = Eigen::VectorXd::Map(ptsx.data(), ptsx.size());
-          // Eigen::VectorXd ptsyV = Eigen::VectorXd::Map(ptsy.data(), ptsy.size());
-          // Eigen::Map<Eigen::VectorXd> ptsxV(ptsx.data(), ptsx.size());
-          // Eigen::Map<Eigen::VectorXd> ptsyV(ptsy.data(), ptsy.size());
-
           vector<double> vxs(ptsx.size());
           vector<double> vys(ptsy.size());
 
@@ -112,20 +106,13 @@ int main() {
           for (int i = 0; i < ptsx.size(); i++) {
             double x = ptsx[i]-px;
             double y = ptsy[i]-py;
-            vxs[i] = x * cos(-psi) - y * sin(-psi);
-            vys[i] = x * sin(-psi) + y * cos(-psi);
+            vxs[i] = x * cos(psi) + y * sin(psi);
+            vys[i] = x * sin(-psi) + y * cos(psi);
           }
           Eigen::Map<Eigen::VectorXd> ptsxV(&vxs[0], vxs.size());
           Eigen::Map<Eigen::VectorXd> ptsyV(&vys[0], vys.size());
 
-
-          // auto coeffs = polyfit(ptsxE,ptsyE,3);
-          // double cte = py - polyeval(coeffs, px);
-          // double epsi = psi - atan(coeffs[1]+coeffs[2]*2*px+coeffs[3]*3*px*px);
-
-
-
-          // fit a 5th order polynomial
+          // fit a 3rd order polynomial
           auto coeffs = polyfit(ptsxV, ptsyV, 3);
 
           // calculate the cross track error
@@ -134,32 +121,18 @@ int main() {
           double epsi = atan(coeffs[1]);
           cout << "epsi " << epsi <<endl;
 
-
-          // calculate the orientation error
-          // auto coeffsd = polyderivative(coeffs);
-          // Eigen::VectorXd coeffsd;
-          // coeffsd.resize(coeffs.size()-1);
-          // for (int i = 1; i < coeffs.size(); i++) {
-          //   coeffsd[i-1] = i * coeffs[i];
-          // }
-          // double fsharpx = polyeval(coeffsd, px);
-
-          // double psid = atan(fsharpx); // desired orientation
-          // double epsi = psi - psid;
-          // cout << "epsi " << epsi <<endl;
-
-          // cout << "coeffs " << coeffs << " cte " << cte << " f'(px) " << fsharpx << " psid " <<psid <<" epsi " << epsi << endl;
-          // cout << "coeffsd " << coeffsd <<endl;
-
           // create current state vector and solve
+          px = 0;
+          py = 0;
+          psi = 0;
           Eigen::VectorXd state(6);
-          state << 0., 0., 0., v, cte, epsi;
-
+          state << px, py, psi, v, cte, epsi;
 
           auto x1 = mpc.Solve(state, coeffs);
 
           nstep += 1;
           cout << "step " << nstep <<endl;
+          
           double steer_value = -x1[6];
           double throttle_value = x1[7];
 
@@ -173,49 +146,6 @@ int main() {
 
           std::cout << "steer " << steer_value << std::endl;
           std::cout << "throttle" << throttle_value << std::endl;
-          // double steer_value;
-          // double throttle_value;
-          // // fit a 3rd order polynomial
-          // auto coeffs = polyfit(ptsx, ptsy, 3);
-          // // The cross track error is calculated by evaluating at polynomial at x, f(x)
-          // // and subtracting y.
-          // double cte = polyeval(coeffs, 0) - py;
-          // // Due to the sign starting at 0, the orientation error is -f'(x).
-          // // derivative of coeffs[0] + coeffs[1] * x -> coeffs[1]
-          // double epsi = -atan(coeffs[1]);
-
-          // Eigen::VectorXd state(6);
-          // state << px, py, psi, v, cte, epsi;
-
-          // std::vector<double> x_vals = {state[0]};
-          // std::vector<double> y_vals = {state[1]};
-          // std::vector<double> psi_vals = {state[2]};
-          // std::vector<double> v_vals = {state[3]};
-          // std::vector<double> cte_vals = {state[4]};
-          // std::vector<double> epsi_vals = {state[5]};
-          // std::vector<double> delta_vals = {};
-          // std::vector<double> a_vals = {};
-
-          // // for (size_t i = 0; i < iters; i++) {
-          // //   std::cout << "Iteration " << i << std::endl;
-
-          // auto vars = mpc.Solve(state, coeffs);
-
-          // x_vals.push_back(vars[0]);
-          // y_vals.push_back(vars[1]);
-          // psi_vals.push_back(vars[2]);
-          // v_vals.push_back(vars[3]);
-          // cte_vals.push_back(vars[4]);
-          // epsi_vals.push_back(vars[5]);
-
-          // delta_vals.push_back(vars[6]);
-          // a_vals.push_back(vars[7]);
-
-          // state << vars[0], vars[1], vars[2], vars[3], vars[4], vars[5];
-          // std::cout << state << std::endl;
-
-          // steer_value = delta_vals[0];
-          // throttle_value = a_vals[0];
 
 
           json msgJson;
