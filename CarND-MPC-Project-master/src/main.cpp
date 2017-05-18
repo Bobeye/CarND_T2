@@ -112,7 +112,7 @@ int main() {
           Eigen::Map<Eigen::VectorXd> ptsxV(&vxs[0], vxs.size());
           Eigen::Map<Eigen::VectorXd> ptsyV(&vys[0], vys.size());
 
-          // fit a 3rd order polynomial
+          // fit a 3rd order polynomial to the track
           auto coeffs = polyfit(ptsxV, ptsyV, 3);
 
           // calculate the cross track error
