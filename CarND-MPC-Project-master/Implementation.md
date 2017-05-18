@@ -15,5 +15,23 @@ The update function is from the in-class quiz:
 ### N and dt
 I started from setting up a 5-second prediction range. I tried several differnt dt choices from 0.05s to 0.5s. The final program is setting at dt=0.2s, therefore N=25.
 
+### Polynomial Fitting and MPC Preprocessing
+Transfering to vehicle coordinates improves the performance. A 3rd order polynomial is set to fit the track. The MPC process is:
+
+setup>>
+
+* Set N & dt
+* Define vehicle dynamics, actuator & non-actuator limitations
+* Define the cost function
+
+loop>>
+
+* pass the initial state to mpc (reset x, y ,psi to 0 due to vehicle coordinate transfer)
+* call the solver
+* apply the first actuator control to the vehicle
+
 ### Latency handling
-The 0.2s dt is longer than the 100ms latency which helps improving the performance.
+The weight tuning on the cost function helps dealing with the latency. The 0.2s dt is longer than the 100ms latency which also helps improving the performance. The reference velociy is tuned to 40 that guarantees a more stable performance of the vehicle.
+
+### Video demo
+https://youtu.be/Q7sOFbKKwDs
