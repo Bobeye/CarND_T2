@@ -2,6 +2,8 @@
 
 ### The Model
 The model has 6 states including x, y, v, psi, cte, epsi and 2 actuators including steering and throttle.
+s, y, v, psi is defined under vehicle coordinates, which makes x, y, psi all to 0, the v is from the message.
+cte and epsi are caculated based on the 3rd order polynomial fitting with ptsx and ptsy from the message.
 The update function is from the in-class quiz:
 ```
 // x_[t+1] = x[t] + v[t] * cos(psi[t]) * dt
